@@ -24,11 +24,7 @@ It is built for use with Kubernetes in mind and supports its token and auhorizat
 
 
 
-authproxy offers two endpoints for issuing bearer tokens and validating them. 
-
-* POST `/login` - issues bearer token
-* POST `/authenticate`- validates bearer tokens
-
+authproxy offers endpoints for issuing bearer tokens and validating them. 
 The concrete behavior of the endpoints is determined by an implementation for a specific backend, a so-called identity provider. 
 
 An identity provider only has to implement the [provider interface](https://github.com/cbrgm/authproxy/blob/master/provider/provider.go) specification and authproxy takes care of handling requests, marshalling data types, managing encryption and allowing you to focus on your provider implementation.
@@ -39,7 +35,7 @@ The following explains how to implement your own identity provider using authpro
 
 ### Building a custom identity provider implementation
 
-Your provider should implement the following interface:
+Your provider must implement the following interface:
 
 ***Provider Interface***:
 ```go
@@ -114,6 +110,8 @@ func (provider *Mock) Authenticate(bearerToken string) (*models.TokenReviewReque
 }
 ```
 
+### Use authproxy with your provider implementation
+
 Start the authproxy with the fake provider:
 
 ***main.go***
@@ -161,11 +159,11 @@ return nil
 | v1/login        | public   | Issues bearer tokens for clients                                       |
 | v1/authenticate | public   | Validates bearer tokens and provides authentication                    |
 | /metrics        | internal | Provides metrics to be observed by Prometheus                          |
-| /healtz         | internal | Indicates wether authproxy is healthy or not (for use with Kubernetes) |
+| /healthz         | internal | Indicates wether authproxy is healthy or not (for use with Kubernetes) |
 
 For the complete example please see /cmd folder.
 
-### Client usage
+### Client usage for implementing app authentication
 
 authproxy provides a client to communicate with the API. It can be used to build authentication mechanisms into apps.
 The use is kept very simple:
