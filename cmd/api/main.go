@@ -61,7 +61,7 @@ var (
 		},
 		cli.StringFlag{
 			Name:        FlagHTTPPrivateAddr,
-			Usage:       "The address SourcePods runs a http server only for internal access",
+			Usage:       "The address authproxy runs a http server only for internal access",
 			Value:       ":6661",
 			Destination: &apiConfig.HTTPPrivateAddr,
 		},
