@@ -1,0 +1,138 @@
+swagger: "2.0"
+info:
+  description: "This is the api documentation for https://github.com/cbrgm/authproxy"
+  version: "1.0"
+  title: "authproxy OpenAPI"
+  termsOfService: "http://github.com/cbrgm/authproxy"
+  contact:
+    email: "chris@cbrgm.net"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "cbrgm.net"
+basePath: "/v1"
+tags:
+  - name: "auth"
+    description: "provides endpoints for authentication against ldap"
+schemes:
+  - "https"
+securityDefinitions:
+  basicAuth:
+    type: "basic"
+paths:
+  /authenticate:
+    post:
+      tags:
+        - "auth"
+      summary: "verifies user credentials"
+      description: "authenticates users"
+      operationId: "authenticate"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "TokenReviewRequest object that needs to be verified"
+          required: true
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
+        401:
+          description: "unauthorized"
+        500:
+          description: "internal server error"
+  /login:
+    post:
+      tags:
+        - "auth"
+      summary: "issues tokens for cluster access"
+      description: "login users"
+      operationId: "login"
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: "OK (successfully authenticated)"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        500:
+          description: "internal server error"
+definitions:
+  TokenReviewRequest:
+    description: "TokenReviewRequest is issued by K8s to this service"
+    type: "object"
+    properties:
+      kind:
+        type: "string"
+        example: "TokenReview"
+      APIVersion:
+        type: "string"
+        example: "authentication.k8s.io/v1beta1"
+      Spec:
+        $ref: "#/definitions/TokenReviewSpec"
+      Status:
+        $ref: "#/definitions/TokenReviewStatus"
+  TokenReviewSpec:
+    description: "TokenReviewSpec contains the token being reviewed"
+    type: "object"
+    properties:
+      Token:
+        type: "string"
+        example: "12354234123141"
+  TokenReviewStatus:
+    description: "TokenReviewStatus is the result of the token authentication request"
+    type: "object"
+    properties:
+      Authenticated:
+        description: "Authenticated is true if the token is valid"
+        type: "boolean"
+        example: "true"
+      User:
+        $ref: "#/definitions/UserInfo"
+  UserInfo:
+    description: "UserInfo contains information about the user"
+    type: "object"
+    properties:
+      Username:
+        description: "The name that uniquely identifies this user among all active users"
+        type: "string"
+        example: "foo"
+      UID:
+        description: "A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs"
+        type: "string"
+        example: "43"
+      Groups:
+        description: "The names of groups this user is a part of"
+        type: array
+        items:
+          type: string
+      Extra:
+        description: "Any additional information provided by the authenticator"
+        type: object
+        additionalProperties: true
+  Principal:
+    description: "Principal contains information about the user"
+    type: "object"
+    properties:
+      Username:
+        description: "The name that uniquely identifies this user among all active users"
+        type: "string"
+        example: "foo"
+      Password:
+        description: "The pasword of the user"
+        type: "string"
+        example: "bar"
+responses:
+  UnauthorizedError:
+    description: "Authentication information is missing or invalid"
+    headers:
+      WWW_Authenticate:
+        type: "string"
