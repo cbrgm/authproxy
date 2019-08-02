@@ -142,7 +142,7 @@ if err := prx.ListenAndServe(); err != nil {
 return nil
 ```
 
-Configuration explained:
+***Authproxy configuration explained:***
 
 | Options         | Description                                                                          |
 |-----------------|--------------------------------------------------------------------------------------|
@@ -154,7 +154,16 @@ Configuration explained:
 | LogJSON         | The logger will log json lines                                                       |
 | LogLevel        | The log level to filter logs with before printing (default: "info")                  |
 
-For the complete example please see here.
+***Authproxy API Endpoints:***
+
+| Endpoints       | Type     | Description                                                            |
+|-----------------|----------|------------------------------------------------------------------------|
+| v1/login        | public   | Issues bearer tokens for clients                                       |
+| v1/authenticate | public   | Validates bearer tokens and provides authentication                    |
+| /metrics        | internal | Provides metrics to be observed by Prometheus                          |
+| /healtz         | internal | Indicates wether authproxy is healthy or not (for use with Kubernetes) |
+
+For the complete example please see /cmd folder.
 
 ### Client usage
 
