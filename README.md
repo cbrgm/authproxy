@@ -115,6 +115,8 @@ func (provider *Mock) Authenticate(bearerToken string) (*models.TokenReviewReque
 ```
 
 Start the authproxy with the fake provider:
+
+***main.go***
 ```go
 // create the config from command line flags
 config := authproxy.ProxyConfig{
@@ -140,7 +142,17 @@ if err := prx.ListenAndServe(); err != nil {
 return nil
 ```
 
-For the complete example please see here.
+Configuration explained:
+
+* ***HTTPAddr*** - The address the proxy runs on (default: ":6660")
+* ***HTTPPrivateAddr*** - The address SourcePods runs a http server only for internal access (default: ":6661")
+* ***TLSKey*** - The tls key file to be used
+* ***TLSCert*** - The tls cert file to be used
+* ***TLSClientCA*** The tls client ca file to be used
+* ***LogJSON*** - The logger will log json lines
+* ***LogLevel*** - The log level to filter logs with before printing (default: "info")
+
+For the complete example please have a look at the /cmd folder.
 
 ### Client usage
 
