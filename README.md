@@ -211,9 +211,7 @@ In order to use authproxy as a service for Kubernetes Webhook Token Authenticati
 
 ## Projects using authproxy
 
-updated soon...
-
-
+* LDAP / Active Directory: [cbrgm/authproxy-ldap](https://github.com/cbrgm/authproxy-ldap])
 ## Credit & License
 
 authproxy is open-source and is developed under the terms of the [Apache 2.0 License](https://github.com/cbrgm/authproxy/blob/master/LICENSE).
