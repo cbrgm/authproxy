@@ -65,16 +65,22 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "OK (successfully authenticated)",
             "schema": {
               "$ref": "#/definitions/TokenReviewRequest"
             }
           },
           "401": {
-            "description": "unauthorized"
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           },
           "500": {
-            "description": "internal server error"
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           }
         }
       }
@@ -100,10 +106,16 @@ func init() {
             }
           },
           "401": {
-            "$ref": "#/responses/UnauthorizedError"
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           },
           "500": {
-            "description": "internal server error"
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           }
         }
       }
@@ -269,16 +281,22 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "OK (successfully authenticated)",
             "schema": {
               "$ref": "#/definitions/TokenReviewRequest"
             }
           },
           "401": {
-            "description": "unauthorized"
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           },
           "500": {
-            "description": "internal server error"
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           }
         }
       }
@@ -304,15 +322,16 @@ func init() {
             }
           },
           "401": {
-            "description": "Authentication information is missing or invalid",
-            "headers": {
-              "WWW_Authenticate": {
-                "type": "string"
-              }
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
             }
           },
           "500": {
-            "description": "internal server error"
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/TokenReviewRequest"
+            }
           }
         }
       }

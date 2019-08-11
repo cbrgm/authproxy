@@ -1,7 +1,24 @@
+/*
+ * Copyright 2019, authproxy authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package api
 
 import (
 	"fmt"
+	"github.com/cbrgm/authproxy/api/errors"
 	"github.com/cbrgm/authproxy/api/v1/models"
 	"github.com/cbrgm/authproxy/api/v1/restapi"
 	"github.com/cbrgm/authproxy/api/v1/restapi/operations"
@@ -18,6 +35,7 @@ import (
 	"net/http"
 )
 
+// NewV1 returns a new configured authproxy v1 multiplexer to be used by a router
 func NewV1(prv *provider.Provider, logger log.Logger) (*chi.Mux, error) {
 	router := chi.NewRouter()
 
@@ -59,10 +77,12 @@ func NewV1(prv *provider.Provider, logger log.Logger) (*chi.Mux, error) {
 
 }
 
+// APIMetrics represents all authproxy metrics
 type APIMetrics struct {
 	LoginAttempts metrics.Counter
 }
 
+// apiMetrics returns new metrics for metrics endpoint
 func apiMetrics() *APIMetrics {
 	namespace := "authproxy"
 
@@ -76,28 +96,51 @@ func apiMetrics() *APIMetrics {
 	}
 }
 
+// NewAuthenticationHandler returns a new handler for /authenticate endpoint
 func NewAuthenticationHandler(sv internal.Service) auth.AuthenticateHandlerFunc {
 	return func(params auth.AuthenticateParams) restful.Responder {
+		request := params.Body
+		tokenReview, err := sv.Authenticate(request.Spec.Token)
 
-		trr := params.Body
+		if errors.IsUnauthorized(err) {
+			tokenReview = defaultResponse()
+			auth.NewAuthenticateUnauthorized().WithPayload(tokenReview)
+		}
 
-		tokenReview, err := sv.Authenticate(trr.Spec.Token)
-		if err != nil {
-			return auth.NewLoginInternalServerError()
+		if errors.IsInternalError(err) || err != nil {
+			tokenReview = defaultResponse()
+			auth.NewLoginInternalServerError().WithPayload(tokenReview)
 		}
 
 		return auth.NewAuthenticateOK().WithPayload(tokenReview)
 	}
 }
+
+// NewLoginHandler returns a new handler for /login endpoint
 func NewLoginHandler(sv internal.Service) auth.LoginHandlerFunc {
 	return func(params auth.LoginParams, user *models.Principal) restful.Responder {
-
 		tokenReview, err := sv.Login(user.Username, user.Password)
-		if err != nil {
-			return auth.NewLoginInternalServerError()
+
+		if errors.IsUnauthorized(err) {
+			tokenReview = defaultResponse()
+			auth.NewLoginUnauthorized().WithPayload(tokenReview)
 		}
 
-		// TODO: not yet implemented
+		if errors.IsInternalError(err) || err != nil {
+			tokenReview = defaultResponse()
+			auth.NewLoginInternalServerError().WithPayload(tokenReview)
+		}
+
 		return auth.NewAuthenticateOK().WithPayload(tokenReview)
+	}
+}
+
+func defaultResponse() *models.TokenReviewRequest {
+	return &models.TokenReviewRequest{
+		APIVersion: "authentication.k8s.io/v1beta1",
+		Kind:       "TokenReview",
+		Status: &models.TokenReviewStatus{
+			Authenticated: false,
+		},
 	}
 }

@@ -60,15 +60,16 @@ func (o *LoginOK) WriteResponse(rw http.ResponseWriter, producer runtime.Produce
 // LoginUnauthorizedCode is the HTTP code returned for type LoginUnauthorized
 const LoginUnauthorizedCode int = 401
 
-/*LoginUnauthorized Authentication information is missing or invalid
+/*LoginUnauthorized unauthorized
 
 swagger:response loginUnauthorized
 */
 type LoginUnauthorized struct {
-	/*
 
-	 */
-	WWWAuthenticate string `json:"WWW_Authenticate"`
+	/*
+	  In: Body
+	*/
+	Payload *models.TokenReviewRequest `json:"body,omitempty"`
 }
 
 // NewLoginUnauthorized creates LoginUnauthorized with default headers values
@@ -77,30 +78,27 @@ func NewLoginUnauthorized() *LoginUnauthorized {
 	return &LoginUnauthorized{}
 }
 
-// WithWWWAuthenticate adds the wWWAuthenticate to the login unauthorized response
-func (o *LoginUnauthorized) WithWWWAuthenticate(wWWAuthenticate string) *LoginUnauthorized {
-	o.WWWAuthenticate = wWWAuthenticate
+// WithPayload adds the payload to the login unauthorized response
+func (o *LoginUnauthorized) WithPayload(payload *models.TokenReviewRequest) *LoginUnauthorized {
+	o.Payload = payload
 	return o
 }
 
-// SetWWWAuthenticate sets the wWWAuthenticate to the login unauthorized response
-func (o *LoginUnauthorized) SetWWWAuthenticate(wWWAuthenticate string) {
-	o.WWWAuthenticate = wWWAuthenticate
+// SetPayload sets the payload to the login unauthorized response
+func (o *LoginUnauthorized) SetPayload(payload *models.TokenReviewRequest) {
+	o.Payload = payload
 }
 
 // WriteResponse to the client
 func (o *LoginUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	// response header WWW_Authenticate
-
-	wWWAuthenticate := o.WWWAuthenticate
-	if wWWAuthenticate != "" {
-		rw.Header().Set("WWW_Authenticate", wWWAuthenticate)
-	}
-
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(401)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 // LoginInternalServerErrorCode is the HTTP code returned for type LoginInternalServerError
@@ -111,6 +109,11 @@ const LoginInternalServerErrorCode int = 500
 swagger:response loginInternalServerError
 */
 type LoginInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.TokenReviewRequest `json:"body,omitempty"`
 }
 
 // NewLoginInternalServerError creates LoginInternalServerError with default headers values
@@ -119,10 +122,25 @@ func NewLoginInternalServerError() *LoginInternalServerError {
 	return &LoginInternalServerError{}
 }
 
+// WithPayload adds the payload to the login internal server error response
+func (o *LoginInternalServerError) WithPayload(payload *models.TokenReviewRequest) *LoginInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the login internal server error response
+func (o *LoginInternalServerError) SetPayload(payload *models.TokenReviewRequest) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *LoginInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(500)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

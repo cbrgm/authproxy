@@ -16,7 +16,7 @@ import (
 // AuthenticateOKCode is the HTTP code returned for type AuthenticateOK
 const AuthenticateOKCode int = 200
 
-/*AuthenticateOK OK
+/*AuthenticateOK OK (successfully authenticated)
 
 swagger:response authenticateOK
 */
@@ -65,6 +65,11 @@ const AuthenticateUnauthorizedCode int = 401
 swagger:response authenticateUnauthorized
 */
 type AuthenticateUnauthorized struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.TokenReviewRequest `json:"body,omitempty"`
 }
 
 // NewAuthenticateUnauthorized creates AuthenticateUnauthorized with default headers values
@@ -73,12 +78,27 @@ func NewAuthenticateUnauthorized() *AuthenticateUnauthorized {
 	return &AuthenticateUnauthorized{}
 }
 
+// WithPayload adds the payload to the authenticate unauthorized response
+func (o *AuthenticateUnauthorized) WithPayload(payload *models.TokenReviewRequest) *AuthenticateUnauthorized {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the authenticate unauthorized response
+func (o *AuthenticateUnauthorized) SetPayload(payload *models.TokenReviewRequest) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *AuthenticateUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(401)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 // AuthenticateInternalServerErrorCode is the HTTP code returned for type AuthenticateInternalServerError
@@ -89,6 +109,11 @@ const AuthenticateInternalServerErrorCode int = 500
 swagger:response authenticateInternalServerError
 */
 type AuthenticateInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.TokenReviewRequest `json:"body,omitempty"`
 }
 
 // NewAuthenticateInternalServerError creates AuthenticateInternalServerError with default headers values
@@ -97,10 +122,25 @@ func NewAuthenticateInternalServerError() *AuthenticateInternalServerError {
 	return &AuthenticateInternalServerError{}
 }
 
+// WithPayload adds the payload to the authenticate internal server error response
+func (o *AuthenticateInternalServerError) WithPayload(payload *models.TokenReviewRequest) *AuthenticateInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the authenticate internal server error response
+func (o *AuthenticateInternalServerError) SetPayload(payload *models.TokenReviewRequest) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *AuthenticateInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(500)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

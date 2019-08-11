@@ -40,13 +40,17 @@ paths:
         - "application/json"
       responses:
         200:
-          description: "OK"
+          description: "OK (successfully authenticated)"
           schema:
             $ref: "#/definitions/TokenReviewRequest"
         401:
           description: "unauthorized"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
         500:
           description: "internal server error"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
   /login:
     post:
       tags:
@@ -62,9 +66,13 @@ paths:
           schema:
             $ref: "#/definitions/TokenReviewRequest"
         401:
-          $ref: '#/responses/UnauthorizedError'
+          description: "unauthorized"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
         500:
           description: "internal server error"
+          schema:
+            $ref: "#/definitions/TokenReviewRequest"
 definitions:
   TokenReviewRequest:
     description: "TokenReviewRequest is issued by K8s to this service"
