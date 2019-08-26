@@ -104,12 +104,12 @@ func NewAuthenticationHandler(sv internal.Service) auth.AuthenticateHandlerFunc 
 
 		if errors.IsUnauthorized(err) {
 			tokenReview = defaultResponse()
-			auth.NewAuthenticateUnauthorized().WithPayload(tokenReview)
+			return auth.NewAuthenticateUnauthorized().WithPayload(tokenReview)
 		}
 
 		if errors.IsInternalError(err) || err != nil {
 			tokenReview = defaultResponse()
-			auth.NewLoginInternalServerError().WithPayload(tokenReview)
+			return auth.NewLoginInternalServerError().WithPayload(tokenReview)
 		}
 
 		return auth.NewAuthenticateOK().WithPayload(tokenReview)
@@ -123,12 +123,12 @@ func NewLoginHandler(sv internal.Service) auth.LoginHandlerFunc {
 
 		if errors.IsUnauthorized(err) {
 			tokenReview = defaultResponse()
-			auth.NewLoginUnauthorized().WithPayload(tokenReview)
+			return auth.NewLoginUnauthorized().WithPayload(tokenReview)
 		}
 
 		if errors.IsInternalError(err) || err != nil {
 			tokenReview = defaultResponse()
-			auth.NewLoginInternalServerError().WithPayload(tokenReview)
+			return auth.NewLoginInternalServerError().WithPayload(tokenReview)
 		}
 
 		return auth.NewAuthenticateOK().WithPayload(tokenReview)
