@@ -101,7 +101,7 @@ func loginAction(c *cli.Context) error {
 		return err
 	}
 
-	token, err := cl.V1.Login(username, password)
+	token, err := cl.Login(username, password)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func authAction(c *cli.Context) error {
 		return err
 	}
 
-	ok, err := cl.V1.Authenticate(token)
+	ok, err := cl.Authenticate(token)
 	if err != nil {
 		return err
 	}

@@ -70,17 +70,26 @@ This serves only as inspiration. Of course you can easily implement other provid
 
 ***mock.go (Example Provider)***:
 ```go
-type Mock struct {
+package fake
+
+import (
+	"github.com/cbrgm/authproxy/api/v1/models"
+)
+
+// FakeProvider represents a fake identity provider
+type FakeProvider struct {
 	Name string
 }
 
-func NewMockProvider() *Mock {
-	return &Mock{
-		Name: "mock-authenticator",
+// NewFakeProvider returns a new fake identity provider
+func NewFakeProvider() *FakeProvider {
+	return &FakeProvider{
+		Name: "fake-authenticator",
 	}
 }
 
-func (provider *Mock) Login(username, password string) (*models.TokenReviewRequest, error) {
+// Login implements login functionality for user foo and password bar
+func (provider *FakeProvider) Login(username, password string) (*models.TokenReviewRequest, error) {
 	var isAuthenticated = false
 	var bearerToken = ""
 
@@ -112,7 +121,8 @@ func (provider *Mock) Login(username, password string) (*models.TokenReviewReque
 	}, nil
 }
 
-func (provider *Mock) Authenticate(bearerToken string) (*models.TokenReviewRequest, error) {
+// Authenticate implements bearer token validation functionalities
+func (provider *FakeProvider) Authenticate(bearerToken string) (*models.TokenReviewRequest, error) {
 	var isTokenValid = false
 
 	if bearerToken == "AbCdEf123456" {
@@ -141,7 +151,7 @@ package main
 import (
 	"fmt"
 	"github.com/cbrgm/authproxy/authproxy"
-	"github.com/cbrgm/authproxy/provider/mock"
+	"github.com/cbrgm/authproxy/provider/fake"
 )
 
 func main() {
@@ -157,10 +167,10 @@ func main() {
   }
 
   // initialize the identity provider
-  fake := mock.NewMockProvider()
+  mock := fake.NewFakeProvider()
 
   // add the provider and config to the proxy
-  prx := authproxy.NewWithProvider(fake, config)
+  prx := authproxy.NewWithProvider(mock, config)
 
   if err := prx.ListenAndServe(); err != nil {
       fmt.Printf("something went wrong: %s", err)
@@ -198,13 +208,13 @@ func main() {
   }
 
   // receive a bearer token
-  token, err := cl.V1.Login(username, password)
+  token, err := cl.Login(username, password)
   if err != nil {
   	return
   }
 
   // authenticate the bearer token
-  ok, err := cl.V1.Authenticate(token)
+  ok, err := cl.Authenticate(token)
   if err != nil {
   	return
   }

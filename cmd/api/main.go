@@ -19,7 +19,7 @@ package main
 import (
 	"fmt"
 	"github.com/cbrgm/authproxy/authproxy"
-	"github.com/cbrgm/authproxy/provider/mock"
+	"github.com/cbrgm/authproxy/provider/fake"
 	"github.com/urfave/cli"
 	"os"
 )
@@ -123,7 +123,7 @@ func apiAction(c *cli.Context) error {
 	}
 
 	// initialize the authentication provider
-	fake := mock.NewMockProvider()
+	fake := fake.NewFakeProvider()
 
 	// add the provider and config to the proxy
 	prx := authproxy.NewWithProvider(fake, config)

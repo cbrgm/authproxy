@@ -16,19 +16,20 @@
 
 package client
 
-import "errors"
+import (
+	"context"
+	"errors"
+	swagger "github.com/cbrgm/authproxy/client/v1"
+	httpclient "github.com/go-openapi/runtime/client"
+)
 
-// ClientSet represents a new clientset for authproxy
+// ClientSet represents a v1 authproxy client
 type ClientSet interface {
-	ClientV1() AuthClientV1
+	Login(username, password string) (string, error)
+	Authenticate(bearerToken string) (bool, error)
 }
 
-// AuthClient represents the concrete clientset implementation
-type AuthClient struct {
-	V1 AuthClientV1
-}
-
-// AuthClientConfig represents the clientset configuration
+// AuthClientConfig represents the clientSet configuration
 type AuthClientConfig struct {
 	Path        string
 	TLSCert     string
@@ -36,8 +37,13 @@ type AuthClientConfig struct {
 	TLSClientCA string
 }
 
-// NewForConfig returns a new clientset for a given configuration
-func NewForConfig(c *AuthClientConfig) (*AuthClient, error) {
+// clientSet represents the v1 authproxy client implementation
+type clientSet struct {
+	client *swagger.APIClient
+}
+
+// newClientV1ForConfig returns a new v1 client for a given config
+func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
 
 	if c.TLSKey == "" {
 		return nil, errors.New("invalid config: required tls key is missing")
@@ -49,18 +55,85 @@ func NewForConfig(c *AuthClientConfig) (*AuthClient, error) {
 		return nil, errors.New("invalid config: required tls client ca is missing")
 	}
 
-	var cs AuthClient
-	var err error
+	// build a tls client from config
+	tlsConfig := httpclient.TLSClientOptions{
+		CA:          c.TLSClientCA,
+		Certificate: c.TLSCert,
+		Key:         c.TLSKey,
+	}
 
-	cs.V1, err = newClientV1ForConfig(c)
+	tlsClient, err := httpclient.TLSClient(tlsConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	return &cs, nil
+	// create a new clientSet using tls and basepath
+	config := swagger.NewConfiguration()
+	config.HTTPClient = tlsClient
+
+	swg := swagger.NewAPIClient(config)
+
+	if c.Path == "" {
+		swg.ChangeBasePath("https://localhost:6660/v1")
+	} else {
+		swg.ChangeBasePath(c.Path)
+	}
+
+	cl := clientSet{client: swg}
+
+	var res ClientSet = &cl
+	return res, nil
 }
 
-// ClientV1 returns the Clientsets V1 client
-func (cs *AuthClient) ClientV1() AuthClientV1 {
-	return cs.V1
+// Login logs is a user or an application by username and password.
+// It will return a bearer token that can be used to authorize actions performed by he client
+func (c *clientSet) Login(username string, password string) (string, error) {
+	if username == "" || password == "" {
+		return "", errors.New("invalid arguments: username or password is empty")
+	}
+
+	auth := context.WithValue(context.Background(), swagger.ContextBasicAuth, swagger.BasicAuth{
+		UserName: username,
+		Password: password,
+	})
+
+	tokenReview, resp, err := c.client.AuthApi.Login(auth)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode == 500 {
+		return "", errors.New("internal server error: authentication process failed on remote server")
+	}
+
+	if resp.StatusCode == 401 || tokenReview.Status.Authenticated == false {
+		return "", errors.New("unauthorized: invalid authentication credentials")
+	}
+
+	return tokenReview.Spec.Token, nil
+}
+
+// Authenticate authenticates actions performed by the client
+// It will return true, if the client in authenticated, false if not
+func (c *clientSet) Authenticate(bearerToken string) (bool, error) {
+	if bearerToken == "" {
+		return false, errors.New("invalid arguments: token is missing")
+	}
+
+	tokenReview, resp, err := c.client.AuthApi.Authenticate(context.TODO(), swagger.TokenReviewRequest{
+		APIVersion: "authentication.k8s.io/v1beta1",
+		Kind:       "TokenReview",
+		Spec: &swagger.TokenReviewSpec{
+			Token: bearerToken,
+		},
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	if resp.StatusCode != 200 || tokenReview.Status.Authenticated == false {
+		return false, nil
+	}
+	return true, nil
 }

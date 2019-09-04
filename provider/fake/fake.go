@@ -14,26 +14,26 @@
  *
  */
 
-package mock
+package fake
 
 import (
 	"github.com/cbrgm/authproxy/api/v1/models"
 )
 
-// Mock represents a fake identity provider
-type Mock struct {
+// FakeProvider represents a fake identity provider
+type FakeProvider struct {
 	Name string
 }
 
-// NewMockProvider returns a new fake identity provider
-func NewMockProvider() *Mock {
-	return &Mock{
-		Name: "mock-authenticator",
+// NewFakeProvider returns a new fake identity provider
+func NewFakeProvider() *FakeProvider {
+	return &FakeProvider{
+		Name: "fake-authenticator",
 	}
 }
 
 // Login implements login functionality for user foo and password bar
-func (provider *Mock) Login(username, password string) (*models.TokenReviewRequest, error) {
+func (provider *FakeProvider) Login(username, password string) (*models.TokenReviewRequest, error) {
 	var isAuthenticated = false
 	var bearerToken = ""
 
@@ -66,7 +66,7 @@ func (provider *Mock) Login(username, password string) (*models.TokenReviewReque
 }
 
 // Authenticate implements bearer token validation functionalities
-func (provider *Mock) Authenticate(bearerToken string) (*models.TokenReviewRequest, error) {
+func (provider *FakeProvider) Authenticate(bearerToken string) (*models.TokenReviewRequest, error) {
 	var isTokenValid = false
 
 	if bearerToken == "AbCdEf123456" {
