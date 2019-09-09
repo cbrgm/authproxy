@@ -129,12 +129,12 @@ func authAction(c *cli.Context) error {
 		return err
 	}
 
-	ok, err := cl.Authenticate(token)
+	rr, err := cl.Authenticate(token)
 	if err != nil {
 		return err
 	}
 
-	if !ok {
+	if !rr.Status.Authenticated {
 		fmt.Println("client unauthenticated, token is invalid")
 		return nil
 	}

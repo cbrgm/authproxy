@@ -19,14 +19,14 @@ package client
 import (
 	"context"
 	"errors"
-	swagger "github.com/cbrgm/authproxy/client/v1"
+	v1 "github.com/cbrgm/authproxy/client/v1"
 	httpclient "github.com/go-openapi/runtime/client"
 )
 
 // ClientSet represents a v1 authproxy client
 type ClientSet interface {
 	Login(username, password string) (string, error)
-	Authenticate(bearerToken string) (bool, error)
+	Authenticate(bearerToken string) (*v1.TokenReviewRequest, error)
 }
 
 // AuthClientConfig represents the clientSet configuration
@@ -39,7 +39,7 @@ type AuthClientConfig struct {
 
 // clientSet represents the v1 authproxy client implementation
 type clientSet struct {
-	client *swagger.APIClient
+	client *v1.APIClient
 }
 
 // newClientV1ForConfig returns a new v1 client for a given config
@@ -68,10 +68,10 @@ func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
 	}
 
 	// create a new clientSet using tls and basepath
-	config := swagger.NewConfiguration()
+	config := v1.NewConfiguration()
 	config.HTTPClient = tlsClient
 
-	swg := swagger.NewAPIClient(config)
+	swg := v1.NewAPIClient(config)
 
 	if c.Path == "" {
 		swg.ChangeBasePath("https://localhost:6660/v1")
@@ -92,7 +92,7 @@ func (c *clientSet) Login(username string, password string) (string, error) {
 		return "", errors.New("invalid arguments: username or password is empty")
 	}
 
-	auth := context.WithValue(context.Background(), swagger.ContextBasicAuth, swagger.BasicAuth{
+	auth := context.WithValue(context.Background(), v1.ContextBasicAuth, v1.BasicAuth{
 		UserName: username,
 		Password: password,
 	})
@@ -115,25 +115,25 @@ func (c *clientSet) Login(username string, password string) (string, error) {
 
 // Authenticate authenticates actions performed by the client
 // It will return true, if the client in authenticated, false if not
-func (c *clientSet) Authenticate(bearerToken string) (bool, error) {
+func (c *clientSet) Authenticate(bearerToken string) (*v1.TokenReviewRequest, error) {
 	if bearerToken == "" {
-		return false, errors.New("invalid arguments: token is missing")
+		return nil, errors.New("invalid arguments: token is missing")
 	}
 
-	tokenReview, resp, err := c.client.AuthApi.Authenticate(context.TODO(), swagger.TokenReviewRequest{
+	tokenReview, resp, err := c.client.AuthApi.Authenticate(context.TODO(), v1.TokenReviewRequest{
 		APIVersion: "authentication.k8s.io/v1beta1",
 		Kind:       "TokenReview",
-		Spec: &swagger.TokenReviewSpec{
+		Spec: &v1.TokenReviewSpec{
 			Token: bearerToken,
 		},
 	})
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if resp.StatusCode != 200 || tokenReview.Status.Authenticated == false {
-		return false, nil
+		return &tokenReview, nil
 	}
-	return true, nil
+	return &tokenReview, nil
 }
