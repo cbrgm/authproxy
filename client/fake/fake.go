@@ -20,6 +20,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/cbrgm/authproxy/client"
+	v1 "github.com/cbrgm/authproxy/client/v1"
+	"strings"
 )
 
 // fakeClient represents the authproxy fake client implementation
@@ -41,23 +43,44 @@ func (c *fakeClient) Login(username, password string) (string, error) {
 	if username == "" || password == "" {
 		return "", errors.New("invalid arguments: username or password is empty")
 	}
-	encoded := base64.StdEncoding.EncodeToString([]byte(username + password))
+	encoded := base64.StdEncoding.EncodeToString([]byte(username + "," + password))
 	c.tokens[username] = encoded
 	return encoded, nil
 }
 
 // Authenticate authenticates actions performed by the client
 // It will return true, if the client in authenticated, false if not
-func (c *fakeClient) Authenticate(bearerToken string) (bool, error) {
-	if bearerToken == "" {
-		return false, errors.New("invalid arguments: token is missing")
+func (c *fakeClient) Authenticate(bearerToken string) (*v1.TokenReviewRequest, error) {
+
+	decoded, err := base64.StdEncoding.DecodeString(bearerToken)
+	if err != nil {
+		return nil, err
 	}
-	authenticated := false
+	username := strings.Split(string(decoded), ",")[0]
+
+	result := &v1.TokenReviewRequest{
+		APIVersion: "authentication.k8s.io/v1beta1",
+		Kind:       "TokenReview",
+		Status: &v1.TokenReviewStatus{
+			Authenticated: false,
+			User: &v1.UserInfo{
+				Username: username,
+				UID:      "1",
+				Groups:   []string{"developers"},
+			},
+		},
+	}
+
+	if bearerToken == "" {
+		result.Status.Authenticated = false
+		return result, errors.New("invalid arguments: token is missing")
+	}
+
 	for _, v := range c.tokens {
 		if v == bearerToken {
-			authenticated = true
+			result.Status.Authenticated = true
 			break
 		}
 	}
-	return authenticated, nil
+	return result, nil
 }
