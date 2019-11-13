@@ -24,15 +24,13 @@ import (
 )
 
 const (
-	FlagTLSCert     = "tls-cert"
-	FlagTLSKey      = "tls-key"
-	FlagTLSClientCA = "tls-ca-cert"
+	FlagPath        = "path"
+	FlagTLSServerCA = "tls-ca-cert"
 )
 
 type clientConf struct {
-	TLSCert     string
-	TLSKey      string
-	TLSClientCA string
+	Path string
+	CA   string
 }
 
 var (
@@ -40,19 +38,14 @@ var (
 
 	clientFlags = []cli.Flag{
 		cli.StringFlag{
-			Name:        FlagTLSKey,
-			Usage:       "The tls key file to be used",
-			Destination: &clientConfig.TLSKey,
+			Name:        FlagPath,
+			Usage:       "The authproxy endpoint url",
+			Destination: &clientConfig.Path,
 		},
 		cli.StringFlag{
-			Name:        FlagTLSCert,
-			Usage:       "The tls cert file to be used",
-			Destination: &clientConfig.TLSCert,
-		},
-		cli.StringFlag{
-			Name:        FlagTLSClientCA,
-			Usage:       "The tls client ca file to be used",
-			Destination: &clientConfig.TLSClientCA,
+			Name:        FlagTLSServerCA,
+			Usage:       "The tls server ca file to be used",
+			Destination: &clientConfig.CA,
 		},
 	}
 
@@ -91,9 +84,8 @@ func loginAction(c *cli.Context) error {
 	username, password := c.Args()[0], c.Args()[1]
 
 	cfg := client.AuthClientConfig{
-		TLSKey:      clientConfig.TLSKey,
-		TLSCert:     clientConfig.TLSCert,
-		TLSClientCA: clientConfig.TLSClientCA,
+		Path: clientConfig.Path,
+		CA:   clientConfig.CA,
 	}
 
 	cl, err := client.NewForConfig(&cfg)
@@ -119,9 +111,8 @@ func authAction(c *cli.Context) error {
 	token := c.Args()[0]
 
 	cfg := client.AuthClientConfig{
-		TLSKey:      clientConfig.TLSKey,
-		TLSCert:     clientConfig.TLSCert,
-		TLSClientCA: clientConfig.TLSClientCA,
+		Path: clientConfig.Path,
+		CA:   clientConfig.CA,
 	}
 
 	cl, err := client.NewForConfig(&cfg)

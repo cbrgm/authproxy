@@ -30,19 +30,19 @@ On another terminal you can query the api using the cli client tool.
 
 ***login unsuccessful: username: foo, password: fail***
 ```bash 
-./client/cli --tls-key client.key --tls-cert client.crt --tls-ca-cert ca.crt login foo fail
+./client/cli --tls-ca-cert ca.crt login foo fail
 > failed to run api: unauthorized: invalid authentication credentials%  
 ```
 
 ***login successful: username: foo, password: bar***
 ```bash 
-./client/cli --tls-key client.key --tls-cert client.crt --tls-ca-cert ca.crt login foo bar
+./client/cli --tls-ca-cert ca.crt login foo bar
 > Received token for user: AbCdEf123456
 ```
 
 ***authenticate the token***
 ```bash 
-./client/cli --tls-key client.key --tls-cert client.crt --tls-ca-cert ca.crt authenticate AbCdEf123456
+./client/cli --tls-ca-cert ca.crt authenticate AbCdEf123456
 client successfully authenticated, token is valid
 ```
 

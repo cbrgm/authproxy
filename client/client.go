@@ -18,8 +18,13 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
+	"fmt"
 	v1 "github.com/cbrgm/authproxy/client/v1"
+	"io/ioutil"
+	"net/http"
 )
 
 // ClientSet represents a v1 authproxy client
@@ -30,7 +35,8 @@ type ClientSet interface {
 
 // AuthClientConfig represents the clientSet configuration
 type AuthClientConfig struct {
-	Path        string
+	Path string
+	CA   string
 }
 
 // clientSet represents the v1 authproxy client implementation
@@ -40,7 +46,29 @@ type clientSet struct {
 
 // newClientV1ForConfig returns a new v1 client for a given config
 func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
+
+	if c.CA == "" {
+		return nil, errors.New("invalid config: required authproxy ca is missing")
+	}
+
+	// try to load the ca file
+	caPool, err := LoadCAFile(c.CA)
+	if err != nil {
+		return nil, err
+	}
+
+	// Trust the augmented cert pool in our client
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: false,
+		RootCAs:            caPool,
+	}
+	tr := &http.Transport{TLSClientConfig: tlsConfig}
+	client := &http.Client{Transport: tr}
+
+	// create a new clientSet using tls and basepath
 	config := v1.NewConfiguration()
+	config.HTTPClient = client
+
 	swg := v1.NewAPIClient(config)
 
 	if c.Path == "" {
@@ -50,6 +78,7 @@ func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
 	}
 
 	cl := clientSet{client: swg}
+
 	var res ClientSet = &cl
 	return res, nil
 }
@@ -105,4 +134,21 @@ func (c *clientSet) Authenticate(bearerToken string) (*v1.TokenReviewRequest, er
 		return &tokenReview, nil
 	}
 	return &tokenReview, nil
+}
+
+// LoadCAFile loads a single PEM-encoded file from the path specified.
+func LoadCAFile(caFile string) (*x509.CertPool, error) {
+	pool := x509.NewCertPool()
+
+	pem, err := ioutil.ReadFile(caFile)
+	if err != nil {
+		return nil, fmt.Errorf("Error loading CA File: %s", err)
+	}
+
+	ok := pool.AppendCertsFromPEM(pem)
+	if !ok {
+		return nil, fmt.Errorf("Error loading CA File: Couldn't parse PEM in: %s", caFile)
+	}
+
+	return pool, nil
 }

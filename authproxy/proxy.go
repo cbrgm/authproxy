@@ -128,7 +128,6 @@ func (p *Proxy) ListenAndServe() error {
 			return errors.New("invalid config: failed to parse client CA")
 		}
 
-		tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
 		tlsConfig.ClientCAs = cPool
 
 		server := http.Server{
