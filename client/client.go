@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	v1 "github.com/cbrgm/authproxy/client/v1"
-	httpclient "github.com/go-openapi/runtime/client"
 )
 
 // ClientSet represents a v1 authproxy client
@@ -32,9 +31,6 @@ type ClientSet interface {
 // AuthClientConfig represents the clientSet configuration
 type AuthClientConfig struct {
 	Path        string
-	TLSCert     string
-	TLSKey      string
-	TLSClientCA string
 }
 
 // clientSet represents the v1 authproxy client implementation
@@ -44,33 +40,7 @@ type clientSet struct {
 
 // newClientV1ForConfig returns a new v1 client for a given config
 func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
-
-	if c.TLSKey == "" {
-		return nil, errors.New("invalid config: required tls key is missing")
-	}
-	if c.TLSCert == "" {
-		return nil, errors.New("invalid config: required tls cert is missing")
-	}
-	if c.TLSClientCA == "" {
-		return nil, errors.New("invalid config: required tls client ca is missing")
-	}
-
-	// build a tls client from config
-	tlsConfig := httpclient.TLSClientOptions{
-		CA:          c.TLSClientCA,
-		Certificate: c.TLSCert,
-		Key:         c.TLSKey,
-	}
-
-	tlsClient, err := httpclient.TLSClient(tlsConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	// create a new clientSet using tls and basepath
 	config := v1.NewConfiguration()
-	config.HTTPClient = tlsClient
-
 	swg := v1.NewAPIClient(config)
 
 	if c.Path == "" {
@@ -80,7 +50,6 @@ func NewForConfig(c *AuthClientConfig) (ClientSet, error) {
 	}
 
 	cl := clientSet{client: swg}
-
 	var res ClientSet = &cl
 	return res, nil
 }
