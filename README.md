@@ -1,13 +1,21 @@
-# authproxy
-
-**A Kubernetes compatible webhook authentication proxy framework and clientset.**
-
 <p align="center">
-    <img src="./docs/images/overview.png" alt="authproxy" title="authproxy" />
+<img src="./docs/images/logo_medium.png" alt="authproxy" title="authproxy" />
 </p>
+
+# authproxy
 
 [![](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/cbrgm/authproxy/blob/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cbrgm/authproxy)](https://goreportcard.com/report/github.com/cbrgm/authproxy)
+
+**A Kubernetes compatible webhook authentication proxy framework and clientset.**
+## Features
+
+* Full-featured, Kubernetes compatible authentication middleware framework
+    * Highly configurable due to plugable identity provider implementations
+    * Integrates with Kubernetes apiserver webhook mode
+    * Supports mutual TLS, Prometheus Metrics, Log Levels, ...
+* Client for easy implementation of authentication mechanisms for applications
+* Lightweight, extensible, and built with developer UX in mind
 
 ## What is it for?
 
@@ -19,14 +27,9 @@ The concrete behavior of the endpoints is determined by an implementation for a 
 
 An identity provider only has to implement the [provider interface](https://github.com/cbrgm/authproxy/blob/master/provider/provider.go) specification and authproxy takes care of handling requests, marshalling data types, managing encryption and allowing you to focus on your provider implementation.
 
-## TL;DR
-
-* Full-featured, Kubernetes compatible authentication middleware framework
-    * Highly configurable due to plugable identity provider implementations
-    * Integrates with Kubernetes apiserver webhook mode
-    * Supports mutual TLS, Prometheus Metrics, Log Levels, ...
-* Client for easy implementation of authentication mechanisms for applications
-* Lightweight, extensible, and built with developer UX in mind
+<p align="center">
+    <img src="./docs/images/overview.png" alt="authproxy" title="authproxy" />
+</p>
 
 ## Authproxy API Endpoints
 
