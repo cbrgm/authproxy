@@ -12,5 +12,5 @@ package swagger
 
 // TokenReviewSpec contains the token being reviewed
 type TokenReviewSpec struct {
-	Token string `json:"Token,omitempty"`
+	Token string `json:"token,omitempty"`
 }

@@ -13,7 +13,7 @@ package swagger
 // TokenReviewRequest is issued by K8s to this service
 type TokenReviewRequest struct {
 	Kind string `json:"kind,omitempty"`
-	APIVersion string `json:"APIVersion,omitempty"`
-	Spec *TokenReviewSpec `json:"Spec,omitempty"`
-	Status *TokenReviewStatus `json:"Status,omitempty"`
+	ApiVersion string `json:"apiVersion,omitempty"`
+	Spec *TokenReviewSpec `json:"spec,omitempty"`
+	Status *TokenReviewStatus `json:"status,omitempty"`
 }

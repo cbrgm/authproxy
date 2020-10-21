@@ -16,16 +16,16 @@ import (
 type UserInfo struct {
 
 	// Any additional information provided by the authenticator
-	Extra interface{} `json:"Extra,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
 
 	// The names of groups this user is a part of
-	Groups []string `json:"Groups"`
+	Groups []string `json:"groups"`
 
 	// A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs
-	UID string `json:"UID,omitempty"`
+	UID string `json:"uid,omitempty"`
 
 	// The name that uniquely identifies this user among all active users
-	Username string `json:"Username,omitempty"`
+	Username string `json:"username,omitempty"`
 }
 
 // Validate validates this user info

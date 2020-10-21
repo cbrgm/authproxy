@@ -142,19 +142,19 @@ func init() {
       "description": "TokenReviewRequest is issued by K8s to this service",
       "type": "object",
       "properties": {
-        "APIVersion": {
+        "apiVersion": {
           "type": "string",
           "example": "authentication.k8s.io/v1beta1"
-        },
-        "Spec": {
-          "$ref": "#/definitions/TokenReviewSpec"
-        },
-        "Status": {
-          "$ref": "#/definitions/TokenReviewStatus"
         },
         "kind": {
           "type": "string",
           "example": "TokenReview"
+        },
+        "spec": {
+          "$ref": "#/definitions/TokenReviewSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/TokenReviewStatus"
         }
       }
     },
@@ -162,7 +162,7 @@ func init() {
       "description": "TokenReviewSpec contains the token being reviewed",
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string",
           "example": "12354234123141"
         }
@@ -172,12 +172,12 @@ func init() {
       "description": "TokenReviewStatus is the result of the token authentication request",
       "type": "object",
       "properties": {
-        "Authenticated": {
+        "authenticated": {
           "description": "Authenticated is true if the token is valid",
           "type": "boolean",
           "example": "true"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/UserInfo"
         }
       }
@@ -186,24 +186,24 @@ func init() {
       "description": "UserInfo contains information about the user",
       "type": "object",
       "properties": {
-        "Extra": {
+        "extra": {
           "description": "Any additional information provided by the authenticator",
           "type": "object",
           "additionalProperties": true
         },
-        "Groups": {
+        "groups": {
           "description": "The names of groups this user is a part of",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "UID": {
+        "uid": {
           "description": "A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs",
           "type": "string",
           "example": "43"
         },
-        "Username": {
+        "username": {
           "description": "The name that uniquely identifies this user among all active users",
           "type": "string",
           "example": "foo"
@@ -358,19 +358,19 @@ func init() {
       "description": "TokenReviewRequest is issued by K8s to this service",
       "type": "object",
       "properties": {
-        "APIVersion": {
+        "apiVersion": {
           "type": "string",
           "example": "authentication.k8s.io/v1beta1"
-        },
-        "Spec": {
-          "$ref": "#/definitions/TokenReviewSpec"
-        },
-        "Status": {
-          "$ref": "#/definitions/TokenReviewStatus"
         },
         "kind": {
           "type": "string",
           "example": "TokenReview"
+        },
+        "spec": {
+          "$ref": "#/definitions/TokenReviewSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/TokenReviewStatus"
         }
       }
     },
@@ -378,7 +378,7 @@ func init() {
       "description": "TokenReviewSpec contains the token being reviewed",
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string",
           "example": "12354234123141"
         }
@@ -388,12 +388,12 @@ func init() {
       "description": "TokenReviewStatus is the result of the token authentication request",
       "type": "object",
       "properties": {
-        "Authenticated": {
+        "authenticated": {
           "description": "Authenticated is true if the token is valid",
           "type": "boolean",
           "example": "true"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/UserInfo"
         }
       }
@@ -402,24 +402,24 @@ func init() {
       "description": "UserInfo contains information about the user",
       "type": "object",
       "properties": {
-        "Extra": {
+        "extra": {
           "description": "Any additional information provided by the authenticator",
           "type": "object",
           "additionalProperties": true
         },
-        "Groups": {
+        "groups": {
           "description": "The names of groups this user is a part of",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "UID": {
+        "uid": {
           "description": "A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs",
           "type": "string",
           "example": "43"
         },
-        "Username": {
+        "username": {
           "description": "The name that uniquely identifies this user among all active users",
           "type": "string",
           "example": "foo"

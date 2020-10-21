@@ -16,7 +16,7 @@ import (
 type TokenReviewSpec struct {
 
 	// token
-	Token string `json:"Token,omitempty"`
+	Token string `json:"token,omitempty"`
 }
 
 // Validate validates this token review spec

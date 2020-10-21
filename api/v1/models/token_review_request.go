@@ -16,17 +16,17 @@ import (
 // swagger:model TokenReviewRequest
 type TokenReviewRequest struct {
 
-	// API version
-	APIVersion string `json:"APIVersion,omitempty"`
-
-	// spec
-	Spec *TokenReviewSpec `json:"Spec,omitempty"`
-
-	// status
-	Status *TokenReviewStatus `json:"Status,omitempty"`
+	// api version
+	APIVersion string `json:"apiVersion,omitempty"`
 
 	// kind
 	Kind string `json:"kind,omitempty"`
+
+	// spec
+	Spec *TokenReviewSpec `json:"spec,omitempty"`
+
+	// status
+	Status *TokenReviewStatus `json:"status,omitempty"`
 }
 
 // Validate validates this token review request
@@ -56,7 +56,7 @@ func (m *TokenReviewRequest) validateSpec(formats strfmt.Registry) error {
 	if m.Spec != nil {
 		if err := m.Spec.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Spec")
+				return ve.ValidateName("spec")
 			}
 			return err
 		}
@@ -74,7 +74,7 @@ func (m *TokenReviewRequest) validateStatus(formats strfmt.Registry) error {
 	if m.Status != nil {
 		if err := m.Status.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Status")
+				return ve.ValidateName("status")
 			}
 			return err
 		}

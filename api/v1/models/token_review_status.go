@@ -17,10 +17,10 @@ import (
 type TokenReviewStatus struct {
 
 	// Authenticated is true if the token is valid
-	Authenticated bool `json:"Authenticated,omitempty"`
+	Authenticated bool `json:"authenticated,omitempty"`
 
 	// user
-	User *UserInfo `json:"User,omitempty"`
+	User *UserInfo `json:"user,omitempty"`
 }
 
 // Validate validates this token review status
@@ -46,7 +46,7 @@ func (m *TokenReviewStatus) validateUser(formats strfmt.Registry) error {
 	if m.User != nil {
 		if err := m.User.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("User")
+				return ve.ValidateName("user")
 			}
 			return err
 		}

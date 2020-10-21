@@ -13,6 +13,6 @@ package swagger
 // TokenReviewStatus is the result of the token authentication request
 type TokenReviewStatus struct {
 	// Authenticated is true if the token is valid
-	Authenticated bool `json:"Authenticated,omitempty"`
-	User *UserInfo `json:"User,omitempty"`
+	Authenticated bool `json:"authenticated,omitempty"`
+	User *UserInfo `json:"user,omitempty"`
 }

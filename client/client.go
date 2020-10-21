@@ -119,7 +119,7 @@ func (c *clientSet) Authenticate(bearerToken string) (*v1.TokenReviewRequest, er
 	}
 
 	tokenReview, resp, err := c.client.AuthApi.Authenticate(context.TODO(), v1.TokenReviewRequest{
-		APIVersion: "authentication.k8s.io/v1beta1",
+		ApiVersion: "authentication.k8s.io/v1beta1",
 		Kind:       "TokenReview",
 		Spec: &v1.TokenReviewSpec{
 			Token: bearerToken,

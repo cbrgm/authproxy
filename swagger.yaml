@@ -81,48 +81,48 @@ definitions:
       kind:
         type: "string"
         example: "TokenReview"
-      APIVersion:
+      apiVersion:
         type: "string"
         example: "authentication.k8s.io/v1beta1"
-      Spec:
+      spec:
         $ref: "#/definitions/TokenReviewSpec"
-      Status:
+      status:
         $ref: "#/definitions/TokenReviewStatus"
   TokenReviewSpec:
     description: "TokenReviewSpec contains the token being reviewed"
     type: "object"
     properties:
-      Token:
+      token:
         type: "string"
         example: "12354234123141"
   TokenReviewStatus:
     description: "TokenReviewStatus is the result of the token authentication request"
     type: "object"
     properties:
-      Authenticated:
+      authenticated:
         description: "Authenticated is true if the token is valid"
         type: "boolean"
         example: "true"
-      User:
+      user:
         $ref: "#/definitions/UserInfo"
   UserInfo:
     description: "UserInfo contains information about the user"
     type: "object"
     properties:
-      Username:
+      username:
         description: "The name that uniquely identifies this user among all active users"
         type: "string"
         example: "foo"
-      UID:
+      uid:
         description: "A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs"
         type: "string"
         example: "43"
-      Groups:
+      groups:
         description: "The names of groups this user is a part of"
         type: array
         items:
           type: string
-      Extra:
+      extra:
         description: "Any additional information provided by the authenticator"
         type: object
         additionalProperties: true
