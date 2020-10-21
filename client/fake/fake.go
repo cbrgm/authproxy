@@ -59,13 +59,13 @@ func (c *fakeClient) Authenticate(bearerToken string) (*v1.TokenReviewRequest, e
 	username := strings.Split(string(decoded), ",")[0]
 
 	result := &v1.TokenReviewRequest{
-		APIVersion: "authentication.k8s.io/v1beta1",
+		ApiVersion: "authentication.k8s.io/v1beta1",
 		Kind:       "TokenReview",
 		Status: &v1.TokenReviewStatus{
 			Authenticated: false,
 			User: &v1.UserInfo{
 				Username: username,
-				UID:      "1",
+				Uid:      "1",
 				Groups:   []string{"developers"},
 			},
 		},
